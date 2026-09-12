@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, 
@@ -9,7 +8,8 @@ import {
   Modal, 
   Animated,
   TouchableWithoutFeedback,
-  useWindowDimensions 
+  useWindowDimensions,
+  Image 
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
@@ -21,9 +21,8 @@ export default function Header() {
   const { width } = useWindowDimensions();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const slideAnim = useRef(new Animated.Value(width)).current; // Inicia fora da tela à direita
+  const slideAnim = useRef(new Animated.Value(width)).current;
 
-  // Breakpoint para telas de computador (≥ 768px)
   const isDesktop = width >= 768;
 
   useEffect(() => {
@@ -64,11 +63,16 @@ export default function Header() {
       {isDesktop ? (
         /* ================= DESKTOP (Telas Grandes) ================= */
         <View style={styles.desktopRow}>
-          {/* Logo no canto esquerdo */}
-          <TouchableOpacity onPress={() => handleNavigate('Home')}>
-            <Text style={styles.logoText}>
-              STUDIO <Text style={styles.logoHighlight}>HELBY</Text>
-            </Text>
+          {/* Container fixo para segurar o posicionamento da Logo Gigante */}
+          <TouchableOpacity 
+            onPress={() => handleNavigate('Home')}
+            style={styles.logoWrapperDesktop}
+          >
+            <Image 
+              source={require('../../../assets/logo-nome-simples.png')} 
+              style={styles.logoImageDesktop}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
 
           {/* Nav Items na mesma linha */}
@@ -99,11 +103,16 @@ export default function Header() {
       ) : (
         /* ================= MOBILE (Telas Menores) ================= */
         <View style={styles.mobileRow}>
-          {/* Logo no topo mobile */}
-          <TouchableOpacity onPress={() => handleNavigate('Home')}>
-            <Text style={styles.logoText}>
-              STUDIO <Text style={styles.logoHighlight}>HELBY</Text>
-            </Text>
+          {/* Logo Gigante sobrepondo no mobile */}
+          <TouchableOpacity 
+            onPress={() => handleNavigate('Home')}
+            style={styles.logoWrapperMobile}
+          >
+            <Image 
+              source={require('../../../assets/logo-nome-simples.png')} 
+              style={styles.logoImageMobile}
+              resizeMode="contain"
+            />
           </TouchableOpacity>
 
           {/* Botão em Bola Vermelha com o menu hambúrguer */}
@@ -138,9 +147,11 @@ export default function Header() {
             >
               {/* Cabeçalho do Menu Lateral */}
               <View style={styles.drawerHeader}>
-                <Text style={styles.logoText}>
-                  STUDIO <Text style={styles.logoHighlight}>HELBY</Text>
-                </Text>
+                <Image 
+                  source={require('../../../assets/logo-nome-simples.png')} 
+                  style={styles.logoImageDrawer}
+                  resizeMode="contain"
+                />
                 <TouchableOpacity 
                   style={styles.closeCircleButton} 
                   onPress={closeMenu}
@@ -188,15 +199,8 @@ const styles = StyleSheet.create({
     borderBottomColor: theme.colors.border,
     paddingVertical: 14,
     paddingHorizontal: theme.spacing.lg,
-  },
-  logoText: {
-    color: theme.colors.textPrimary,
-    fontSize: theme.fontSize.lg,
-    fontWeight: '900',
-    letterSpacing: 1.5,
-  },
-  logoHighlight: {
-    color: theme.colors.primary,
+    zIndex: 100, // Garante que a logo sobressaia por cima das outras seções da tela
+    elevation: 10,
   },
 
   /* ------------ DESKTOP STYLES ------------ */
@@ -207,6 +211,20 @@ const styles = StyleSheet.create({
     maxWidth: 1200,
     alignSelf: 'center',
     width: '100%',
+    height: 48, // Altura padrão da barra
+  },
+  logoWrapperDesktop: {
+    width: 280,
+    height: 48,
+    justifyContent: 'center',
+    zIndex: 101,
+  },
+  logoImageDesktop: {
+    position: 'absolute',
+    top: -25, // Faz a imagem "sair" para cima e para baixo do menu
+    left: 0,
+    width: 320, // Logo super larga
+    height: 100, // Altura muito maior que a barra do header
   },
   desktopNavGroup: {
     flexDirection: 'row',
@@ -247,6 +265,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: 48,
+  },
+  logoWrapperMobile: {
+    width: 220,
+    height: 48,
+    justifyContent: 'center',
+    zIndex: 101,
+  },
+  logoImageMobile: {
+    position: 'absolute',
+    top: -18,
+    left: 0,
+    width: 240,
+    height: 85,
   },
   redCircleButton: {
     width: 44,
@@ -286,6 +318,10 @@ const styles = StyleSheet.create({
     paddingBottom: theme.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
+  },
+  logoImageDrawer: {
+    width: 180,
+    height: 55,
   },
   closeCircleButton: {
     width: 36,
