@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -7,6 +7,8 @@ import {
   TouchableOpacity, 
   ScrollView, 
   Modal, 
+  Animated,
+  TouchableWithoutFeedback,
   useWindowDimensions 
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -19,9 +21,30 @@ export default function Header() {
   const { width } = useWindowDimensions();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(width)).current; // Inicia fora da tela à direita
 
   // Breakpoint para telas de computador (≥ 768px)
   const isDesktop = width >= 768;
+
+  useEffect(() => {
+    if (menuOpen) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [menuOpen, slideAnim]);
+
+  const closeMenu = () => {
+    Animated.timing(slideAnim, {
+      toValue: width,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      setMenuOpen(false);
+    });
+  };
 
   const menuItems = [
     { name: 'Home', label: 'Início' },
@@ -32,7 +55,7 @@ export default function Header() {
   ];
 
   const handleNavigate = (screenName) => {
-    setMenuOpen(false);
+    closeMenu();
     navigation.navigate(screenName);
   };
 
@@ -94,54 +117,65 @@ export default function Header() {
         </View>
       )}
 
-      {/* ================= MODAL COM ANIMAÇÃO ================= */}
+      {/* ================= MODAL COM ANIMAÇÃO LATERAL ================= */}
       <Modal
         visible={menuOpen}
-        animationType="slide"
+        animationType="fade"
         transparent={true}
-        onRequestClose={() => setMenuOpen(false)}
+        onRequestClose={closeMenu}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.drawerContainer}>
-            {/* Cabeçalho do Menu Lateral */}
-            <View style={styles.drawerHeader}>
-              <Text style={styles.logoText}>
-                STUDIO <Text style={styles.logoHighlight}>HELBY</Text>
-              </Text>
-              <TouchableOpacity 
-                style={styles.closeCircleButton} 
-                onPress={() => setMenuOpen(false)}
-              >
-                <Feather name="x" size={22} color="#FFF" />
-              </TouchableOpacity>
-            </View>
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={closeMenu}
+        >
+          <TouchableWithoutFeedback>
+            <Animated.View 
+              style={[
+                styles.drawerContainer, 
+                { transform: [{ translateX: slideAnim }] }
+              ]}
+            >
+              {/* Cabeçalho do Menu Lateral */}
+              <View style={styles.drawerHeader}>
+                <Text style={styles.logoText}>
+                  STUDIO <Text style={styles.logoHighlight}>HELBY</Text>
+                </Text>
+                <TouchableOpacity 
+                  style={styles.closeCircleButton} 
+                  onPress={closeMenu}
+                >
+                  <Feather name="x" size={22} color="#FFF" />
+                </TouchableOpacity>
+              </View>
 
-            {/* Links do Menu Mobile */}
-            <ScrollView contentContainerStyle={styles.drawerNavItems}>
-              {menuItems.map((item) => {
-                const isActive = route.name === item.name;
-                return (
-                  <TouchableOpacity
-                    key={item.name}
-                    onPress={() => handleNavigate(item.name)}
-                    style={[styles.drawerNavItem, isActive && styles.drawerNavItemActive]}
-                  >
-                    <Text style={[styles.drawerNavText, isActive && styles.drawerNavTextActive]}>
-                      {item.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+              {/* Links do Menu Mobile */}
+              <ScrollView contentContainerStyle={styles.drawerNavItems}>
+                {menuItems.map((item) => {
+                  const isActive = route.name === item.name;
+                  return (
+                    <TouchableOpacity
+                      key={item.name}
+                      onPress={() => handleNavigate(item.name)}
+                      style={[styles.drawerNavItem, isActive && styles.drawerNavItemActive]}
+                    >
+                      <Text style={[styles.drawerNavText, isActive && styles.drawerNavTextActive]}>
+                        {item.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
 
-              <TouchableOpacity
-                style={styles.drawerCtaButton}
-                onPress={() => handleNavigate('Agendamento')}
-              >
-                <Text style={styles.ctaText}>AGENDAR HORÁRIO</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </View>
+                <TouchableOpacity
+                  style={styles.drawerCtaButton}
+                  onPress={() => handleNavigate('Agendamento')}
+                >
+                  <Text style={styles.ctaText}>AGENDAR HORÁRIO</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
@@ -231,7 +265,7 @@ const styles = StyleSheet.create({
   /* ------------ DRAWER / MODAL STYLES ------------ */
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
   },
