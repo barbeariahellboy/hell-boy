@@ -4,21 +4,24 @@
     "slug": "hell-boy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/logo-nome-simples.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/logo-nome-simples.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B0B0B"
+    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#0B0B0B",
+        "foregroundImage": "./assets/logo-nome-simples.png"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo-nome-simples.png"
     }
   }
 }
