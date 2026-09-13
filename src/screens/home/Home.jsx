@@ -1,4 +1,3 @@
-// src/screens/HomeScreen.jsx
 import React from 'react';
 import {
   View,
@@ -13,9 +12,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { theme } from '../../styles/theme';
-import Header from '../../components/header/Header';
 
-export default function HomeScreen() {
+export default function Home() {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
 
@@ -29,7 +27,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* ================= HERO SECTION ================= */}
         <ImageBackground
@@ -37,24 +34,20 @@ export default function HomeScreen() {
           style={styles.heroBackground}
           imageStyle={styles.heroBackgroundImage}
         >
-          {/* Overlay escuro para dar contraste com os textos */}
+          {/* Overlay escuro para dar contraste com os elementos */}
           <View style={styles.heroOverlay}>
             <View style={styles.heroContent}>
-              {/* Título Principal */}
-              <Text style={styles.heroBrandText}>
-                STUDIO <Text style={styles.heroBrandHighlight}>HELBY</Text>
-              </Text>
-              <Text style={styles.heroSubBrand}>BARBER</Text>
-
-              {/* Slogan */}
-              <View style={styles.sloganContainer}>
-                <Text style={styles.sloganText}>
-                  MAIS QUE UM CORTE,{' '}
-                  <Text style={styles.sloganHighlight}>É ESTILO DE VIDA.</Text>
-                </Text>
+              
+              {/* Container que recorta a transparência do topo do banner-inicial */}
+              <View style={styles.bannerCropper}>
+                <Image 
+                  source={require('../../../assets/banner-inicial.png')} 
+                  style={styles.bannerImage}
+                  resizeMode="contain"
+                />
               </View>
 
-              {/* Botão de Agendamento */}
+              {/* Botão de Agendamento (Logo abaixo do banner) */}
               <TouchableOpacity
                 style={styles.ctaButton}
                 activeOpacity={0.85}
@@ -113,45 +106,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(11, 11, 11, 0.75)',
     justifyContent: 'space-between',
-    paddingTop: theme.spacing.xxl,
+    paddingTop: theme.spacing.md,
   },
   heroContent: {
     alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.xl,
   },
-  heroBrandText: {
-    fontSize: theme.fontSize.title,
-    fontWeight: '900',
-    color: theme.colors.textPrimary,
-    letterSpacing: 3,
-    textAlign: 'center',
+
+  /* Recorte da transparência do topo da imagem */
+  bannerCropper: {
+    width: '100%',
+    maxWidth: 450,
+    height: 220, // Define a altura visível do banner
+    overflow: 'hidden', // Esconde a parte que ultrapassar
+    justifyContent: 'flex-end', // Alinha a imagem para focar na parte inferior útil
+    alignItems: 'center',
+    marginBottom: theme.spacing.lg,
   },
-  heroBrandHighlight: {
-    color: theme.colors.primary,
+  bannerImage: {
+    width: '100%',
+    height: 280, // Aumentamos a altura total da imagem
+    marginTop: -40, // Sobe a imagem para cortar a transparência superior
   },
-  heroSubBrand: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: '800',
-    color: theme.colors.accent,
-    letterSpacing: 6,
-    marginTop: -6,
-    marginBottom: theme.spacing.xl,
-  },
-  sloganContainer: {
-    maxWidth: 320,
-    marginBottom: theme.spacing.xl,
-  },
-  sloganText: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '800',
-    color: theme.colors.textPrimary,
-    textAlign: 'center',
-    lineHeight: 28,
-  },
-  sloganHighlight: {
-    color: theme.colors.primary,
-  },
+
   ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -188,6 +165,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     gap: 12,
+    marginTop: theme.spacing.lg,
   },
   quickServiceItem: {
     alignItems: 'center',
